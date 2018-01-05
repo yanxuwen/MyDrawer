@@ -1,15 +1,15 @@
 
-#前言	
-   该抽屉实现了可以定义4边的抽屉，大小随意控制。可实现（仿今日头条的评论抽屉功能）
+# 前言 该抽屉实现了可以定义4边的抽屉，大小随意控制。可实现（仿今日头条的评论抽屉功能）
+# 博客地址：https://www.jianshu.com/p/2abb8c20817f
 
-#先看下效果图	
+# 先看下效果图	
 ![GIF.gif](http://upload-images.jianshu.io/upload_images/6835615-d55e8a1d4b96d8e2.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 
-#依赖：	
+# 依赖：	
    compile 'com.yanxuwen.mydrawer:mydrawer:1.1.4’
-#实现：	
+# 实现：	
 #### 1.首先自定义类。TextDragLayout 
 ~~~
 public class TextDragLayout extends BaseDragLayout {
@@ -79,9 +79,9 @@ public class TextDragLayout extends BaseDragLayout {
 </com.yanxuwen.drawer.TextDragLayout>
 ~~~
 我们可以看到有个这样的值 myapp:mode="drag_right" 就是设置右边抽屉，只要改这个值就可以随意更改抽屉位置分别有drag_left,drag_right,drag_top,drag_bottom。
-######我们可以看到里面有2个子类，其实只要一个子类就可以，那就是layout_drag，记得上面有setContentView(findViewById(R.id.layout_drag));就是设置抽屉布局。至于iv_cover其实就是阴影部分，由于我们不提供任何阴影的控制，因为不同的需求，阴影不同，所以我们设置阴影很简单，就是在布局在加个子类，透明度为0然后在TextDragLayout 的onViewOffset偏移量回调控制阴影透明度变化，这样就会实现阴影效果。
+###### 我们可以看到里面有2个子类，其实只要一个子类就可以，那就是layout_drag，记得上面有setContentView(findViewById(R.id.layout_drag));就是设置抽屉布局。至于iv_cover其实就是阴影部分，由于我们不提供任何阴影的控制，因为不同的需求，阴影不同，所以我们设置阴影很简单，就是在布局在加个子类，透明度为0然后在TextDragLayout 的onViewOffset偏移量回调控制阴影透明度变化，这样就会实现阴影效果。
 
-#3.MainActivity
+# 3.MainActivity
  ~~~
 打开我们只需要mTextDragLayout.open();
 关闭只需要 mTextDragLayout.close();
@@ -104,12 +104,12 @@ public class TextDragLayout extends BaseDragLayout {
         return false;
     }
 ~~~
-#4.基本流程就是这样，很简单，但是如果你要实现类似今日头条那样，有个列表，由于都是上下滑动，所以会导致列表不会滑动，之后滑动抽屉，我们只要简单的加上下面这句话即可
+# 4.基本流程就是这样，很简单，但是如果你要实现类似今日头条那样，有个列表，由于都是上下滑动，所以会导致列表不会滑动，之后滑动抽屉，我们只要简单的加上下面这句话即可
 ~~~
 mTextDragLayout.setRecyclerView(mRecyclerView);
 加了上面那句话你就会发现，会先滑动列表，列表滑动到顶才会滑动抽屉，是不是跟今日头条一样，支持4个方向的冲突，
 ~~~
- #github代码：https://github.com/yanxuwen/MyDrawer
-####喜欢就在github star下,非常感谢o(∩_∩)o~~~，您star下就是我的动力，
-#微信公众号：
+ # github代码：https://github.com/yanxuwen/MyDrawer
+#### 喜欢就在github star下,非常感谢o(∩_∩)o~~~，您star下就是我的动力，
+# 微信公众号：
 ![qrcode_for_gh_8e99f824c0d6_344.jpg](http://upload-images.jianshu.io/upload_images/6835615-8b35ce64a1688c8b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)

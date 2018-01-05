@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+   <LinearLayout
+       android:id="@+id/layout"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       >
+
+       <Button
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:onClick="onFullRight"
+           android:text="整体抽屉right"/>
+       <Button
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:onClick="onFullLeft"
+           android:text="整体抽屉left"/>
+       <Button
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:onClick="onFullBottom"
+           android:text="整体抽屉bottom"/>
+       <Button
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:onClick="onFullTop"
+           android:text="整体抽屉top"/>
+       <!--<Button-->
+           <!--android:layout_width="match_parent"-->
+           <!--android:layout_height="wrap_content"-->
+           <!--android:onClick="onFullAlpha"-->
+           <!--android:text="渐变抽屉"/>-->
+       <!--<Button-->
+           <!--android:id="@+id/button"-->
+           <!--android:layout_width="wrap_content"-->
+           <!--android:layout_height="wrap_content"-->
+           <!--android:text="控件抽屉，目前只支持上下，不支持左右"-->
+           <!--android:onClick="onControlDrawer" />-->
+   </LinearLayout>
+
+    <include
+        android:id="@+id/includ_text_drag"
+        layout="@layout/test_drag"/>
+
+    <include
+        android:id="@+id/includ_text_drag2"
+        layout="@layout/test_drag_left"/>
+    <include
+        android:id="@+id/includ_text_drag3"
+        layout="@layout/test_drag_bottom"/>
+    <include
+        android:id="@+id/includ_text_drag4"
+        layout="@layout/test_drag_top"/>
+    <!--<include-->
+    <!--android:id="@+id/includ_text_drag5"-->
+    <!--layout="@layout/test_drag_alptha"/>-->
+</RelativeLayout>

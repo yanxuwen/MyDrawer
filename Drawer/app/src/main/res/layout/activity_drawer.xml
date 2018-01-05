@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.yanxuwen.mydrawer.DrawerLayout
+        xmlns:my="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/dragLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
+        android:background="#FD1"
+        my:content="@+id/content"
+        my:direction="bottom"
+        my:handle="@+id/handle"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/content"
+            layout="@layout/open_content" />
+        <include
+            android:id="@+id/handle"
+            layout="@layout/open_handle" />
+
+
+    </com.yanxuwen.mydrawer.DrawerLayout>
+
+</RelativeLayout>

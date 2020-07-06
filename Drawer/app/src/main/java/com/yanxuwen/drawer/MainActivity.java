@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
     TextDragLayout mTextDragLayout2;
     TextDragLayout mTextDragLayout3;
     TextDragLayout mTextDragLayout4;
-    TextDragLayout mTextDragLayout5;
+//    TextDragLayout mTextDragLayout5;
 
 
 
@@ -25,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTextDragLayout = (TextDragLayout)findViewById(R.id.includ_text_drag);
-//        mTextDragLayout2 = (TextDragLayout)findViewById(R.id.includ_text_drag2);
-//        mTextDragLayout3 = (TextDragLayout)findViewById(R.id.includ_text_drag3);
-//        mTextDragLayout4 = (TextDragLayout)findViewById(R.id.includ_text_drag4);
+        mTextDragLayout2 = (TextDragLayout)findViewById(R.id.includ_text_drag2);
+        mTextDragLayout3 = (TextDragLayout)findViewById(R.id.includ_text_drag3);
+        mTextDragLayout4 = (TextDragLayout)findViewById(R.id.includ_text_drag4);
 //        mTextDragLayout5= (TextDragLayout)findViewById(R.id.includ_text_drag5);
 
         mTextDragLayout.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
@@ -42,57 +42,49 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("xxxx","右边抽屉偏移量"+Offset);
             }
         });
-//        mTextDragLayout.setEdgeSlide(false);
-//
-//
-//
-//
-//        mTextDragLayout2.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
-//            @Override
-//            public void onDragViewStatus(boolean isOpen) {
-//                Log.e("xxxx","左边抽屉是否打开"+isOpen);
-//            }
-//        });
-//        mTextDragLayout2.setOnDragViewOffsetListener(new BaseDragLayout.OnDragViewOffsetListener() {
-//            @Override
-//            public void onDragViewOffset(float Offset) {
-//                Log.e("xxxx","左边抽屉偏移量"+Offset);
-//            }
-//        });
-//
-//
-//
-//
-//        mTextDragLayout3.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
-//            @Override
-//            public void onDragViewStatus(boolean isOpen) {
-//                Log.e("xxxx","底边抽屉是否打开"+isOpen);
-//            }
-//        });
-//        mTextDragLayout3.setOnDragViewOffsetListener(new BaseDragLayout.OnDragViewOffsetListener() {
-//            @Override
-//            public void onDragViewOffset(float Offset) {
-//                Log.e("xxxx","底边抽屉偏移量"+Offset);
-//            }
-//        });
-////        mTextDragLayout3.setSlideable(false);
-//
-//
-//
-//
-//
-//        mTextDragLayout4.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
-//            @Override
-//            public void onDragViewStatus(boolean isOpen) {
-//                Log.e("xxxx","上边抽屉是否打开"+isOpen);
-//            }
-//        });
-//        mTextDragLayout4.setOnDragViewOffsetListener(new BaseDragLayout.OnDragViewOffsetListener() {
-//            @Override
-//            public void onDragViewOffset(float Offset) {
-//                Log.e("xxxx","上边抽屉偏移量"+Offset);
-//            }
-//        });
+
+        mTextDragLayout2.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
+            @Override
+            public void onDragViewStatus(boolean isOpen) {
+                Log.e("xxxx","左边抽屉是否打开"+isOpen);
+            }
+        });
+        mTextDragLayout2.setOnDragViewOffsetListener(new BaseDragLayout.OnDragViewOffsetListener() {
+            @Override
+            public void onDragViewOffset(float Offset) {
+                Log.e("xxxx","左边抽屉偏移量"+Offset);
+            }
+        });
+
+
+
+
+        mTextDragLayout3.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
+            @Override
+            public void onDragViewStatus(boolean isOpen) {
+                Log.e("xxxx","底边抽屉是否打开"+isOpen);
+            }
+        });
+        mTextDragLayout3.setOnDragViewOffsetListener(new BaseDragLayout.OnDragViewOffsetListener() {
+            @Override
+            public void onDragViewOffset(float Offset) {
+                Log.e("xxxx","底边抽屉偏移量"+Offset);
+            }
+        });
+
+
+        mTextDragLayout4.setOnDragViewStatusListener(new BaseDragLayout.OnDragViewStatusListener() {
+            @Override
+            public void onDragViewStatus(boolean isOpen) {
+                Log.e("xxxx","上边抽屉是否打开"+isOpen);
+            }
+        });
+        mTextDragLayout4.setOnDragViewOffsetListener(new BaseDragLayout.OnDragViewOffsetListener() {
+            @Override
+            public void onDragViewOffset(float Offset) {
+                Log.e("xxxx","上边抽屉偏移量"+Offset);
+            }
+        });
 
     }
     public void onFullRight(View v){

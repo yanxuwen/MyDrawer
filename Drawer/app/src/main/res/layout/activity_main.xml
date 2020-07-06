@@ -46,16 +46,16 @@
         android:id="@+id/includ_text_drag"
         layout="@layout/test_drag"/>
 
-    <!--<include-->
-        <!--android:id="@+id/includ_text_drag2"-->
-        <!--layout="@layout/test_drag_left"/>-->
-    <!--<include-->
-        <!--android:id="@+id/includ_text_drag3"-->
-        <!--layout="@layout/test_drag_bottom"/>-->
-    <!--<include-->
-        <!--android:id="@+id/includ_text_drag4"-->
-        <!--layout="@layout/test_drag_top"/>-->
-    <!--<include-->
-    <!--android:id="@+id/includ_text_drag5"-->
-    <!--layout="@layout/test_drag_alptha"/>-->
+    <include
+        android:id="@+id/includ_text_drag2"
+        layout="@layout/test_drag_left"/>
+    <include
+        android:id="@+id/includ_text_drag3"
+        layout="@layout/test_drag_bottom"/>
+    <include
+        android:id="@+id/includ_text_drag4"
+        layout="@layout/test_drag_top"/>
+<!--    <include-->
+<!--    android:id="@+id/includ_text_drag5"-->
+<!--    layout="@layout/test_drag_alptha"/>-->
 </RelativeLayout>

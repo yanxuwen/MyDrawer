@@ -38,7 +38,9 @@ public abstract class BaseDragLayout extends ViewGroup {
     private boolean isopen;
     public int mode;
     //边缘大小
-    private int mEdgeSize = 20;
+    private int mEdgeSize = 30;
+    //设置事件滑动，最小值，当小于这个值，不触发当前滑动
+    private int mMoveEventSize = 30;
     public final static int MODE_ALPHA = 0;
     public final static int MODE_DRAG_LEFT = 1;
     public final static int MODE_DRAG_RIGHT = 2;
@@ -464,16 +466,19 @@ public abstract class BaseDragLayout extends ViewGroup {
                     case MODE_DRAG_LEFT:
                         if ((mRecyclerView != null ? isRecyclerViewRight : false) && (downX - ev.getX()) > 1)
                             return true;
+                        break;
                     case MODE_DRAG_RIGHT:
                         if ((mRecyclerView != null ? isRecyclerViewLeft : false) && (ev.getX() - downX) > 1)
                             return true;
+                        break;
                     case MODE_DRAG_TOP:
                         if ((mRecyclerView != null ? isRecyclerViewBottom : false) && (downY - ev.getY()) > 1)
                             return true;
+                        break;
                     case MODE_DRAG_BOTTOM:
                         if ((mRecyclerView != null ? isRecyclerViewTop : false) && (ev.getY() - downY) > 1)
                             return true;
-
+                        break;
                 }
                 switch (getMode()) {
                     case MODE_DRAG_LEFT:
@@ -499,13 +504,13 @@ public abstract class BaseDragLayout extends ViewGroup {
                 //如果是其他控件则超过20，则拦截
                 switch (getMode()) {
                     case MODE_DRAG_LEFT:
-                        if ((downX - ev.getX()) > 20) return true;
+                        if ((ev.getX() - downX) > mMoveEventSize) return true;
                     case MODE_DRAG_RIGHT:
-                        if ((ev.getX() - downX) > 20) return true;
+                        if ((downX - ev.getX()) > mMoveEventSize) return true;
                     case MODE_DRAG_TOP:
-                        if ((downY - ev.getY()) > 20) return true;
+                        if ((ev.getY() - downY) > mMoveEventSize) return true;
                     case MODE_DRAG_BOTTOM:
-                        if ((ev.getY() - downY) > 20) return true;
+                        if ((downY - ev.getY()) > mMoveEventSize) return true;
 
                 }
             }
@@ -694,6 +699,11 @@ public abstract class BaseDragLayout extends ViewGroup {
             e.printStackTrace();
         }
     }
+
+    public void setMoveEventSize(int mMoveEventSize) {
+        this.mMoveEventSize = mMoveEventSize;
+    }
+
 
     /**
      * 是否是横向的，如果是则不显示加载样式

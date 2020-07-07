@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yanxuwen.drawer.TextDragLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/includ_text_drag"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto"
+    myapp:mode="drag_right"
+    >
    <LinearLayout
        android:id="@+id/layout"
        android:layout_width="match_parent"
@@ -43,19 +47,18 @@
    </LinearLayout>
 
     <include
-        android:id="@+id/includ_text_drag"
         layout="@layout/test_drag"/>
 
-    <include
-        android:id="@+id/includ_text_drag2"
-        layout="@layout/test_drag_left"/>
-    <include
-        android:id="@+id/includ_text_drag3"
-        layout="@layout/test_drag_bottom"/>
-    <include
-        android:id="@+id/includ_text_drag4"
-        layout="@layout/test_drag_top"/>
+<!--    <include-->
+<!--        android:id="@+id/includ_text_drag2"-->
+<!--        layout="@layout/test_drag_left"/>-->
+<!--    <include-->
+<!--        android:id="@+id/includ_text_drag3"-->
+<!--        layout="@layout/test_drag_bottom"/>-->
+<!--    <include-->
+<!--        android:id="@+id/includ_text_drag4"-->
+<!--        layout="@layout/test_drag_top"/>-->
 <!--    <include-->
 <!--    android:id="@+id/includ_text_drag5"-->
 <!--    layout="@layout/test_drag_alptha"/>-->
-</RelativeLayout>
+</com.yanxuwen.drawer.TextDragLayout>

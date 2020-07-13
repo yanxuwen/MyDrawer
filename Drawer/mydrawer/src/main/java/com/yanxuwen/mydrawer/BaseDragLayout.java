@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import java.lang.reflect.Field;
 
@@ -449,6 +450,10 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (isOutside && !isClickView(getContentView(), ev) && isopen ) {
+            close();
+            return true;
+        }
         if (getSlideable() || (!getSlideable() && ev.getAction() == MotionEvent.ACTION_UP)) {
             mDragHelper.shouldInterceptTouchEvent(ev);
         }
@@ -500,19 +505,18 @@ public abstract class BaseDragLayout extends ViewGroup {
                         }
                         break;
                 }
-            } else {
-                //如果是其他控件则超过20，则拦截
-                switch (getMode()) {
-                    case MODE_DRAG_LEFT:
-                        if ((ev.getX() - downX) > mMoveEventSize) return true;
-                    case MODE_DRAG_RIGHT:
-                        if ((downX - ev.getX()) > mMoveEventSize) return true;
-                    case MODE_DRAG_TOP:
-                        if ((ev.getY() - downY) > mMoveEventSize) return true;
-                    case MODE_DRAG_BOTTOM:
-                        if ((downY - ev.getY()) > mMoveEventSize) return true;
+            }
+            //如果是其他控件则超过20，则拦截
+            switch (getMode()) {
+                case MODE_DRAG_LEFT:
+                    if ((ev.getX() - downX) > mMoveEventSize) return true;
+                case MODE_DRAG_RIGHT:
+                    if ((downX - ev.getX()) > mMoveEventSize) return true;
+                case MODE_DRAG_TOP:
+                    if ((ev.getY() - downY) > mMoveEventSize) return true;
+                case MODE_DRAG_BOTTOM:
+                    if ((downY - ev.getY()) > mMoveEventSize) return true;
 
-                }
             }
         }
 
@@ -521,43 +525,39 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+       if (isopen){
+           processTouchEvent(event);
+       }
+        switch (getMode()) {
+            case MODE_DRAG_LEFT:
+                if ((event.getX() - downX) > mMoveEventSize) {
+                    processTouchEvent(event);
+                }
+                break;
+            case MODE_DRAG_RIGHT:
+                if ((downX - event.getX()) > mMoveEventSize) {
+                    processTouchEvent(event);
+                }
+                break;
+            case MODE_DRAG_TOP:
+                if ((event.getY() - downY) > mMoveEventSize) {
+                    processTouchEvent(event);
+                }
+                break;
+            case MODE_DRAG_BOTTOM:
+                if ((downY - event.getY()) > mMoveEventSize) {
+                    processTouchEvent(event);
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    private void processTouchEvent(MotionEvent event){
         if (getSlideable() || (!getSlideable() && event.getAction() == MotionEvent.ACTION_UP)) {
             mDragHelper.processTouchEvent(event);
         }
-        //如果是第一种模式，则判断是否点击外部，点击外部关闭菜单栏
-        //第二种模式，不提给点击外部
-        if (isOutside && isopen && event.getAction() == MotionEvent.ACTION_UP) {
-            if (Math.abs(event.getX() - downX) < 50 && Math.abs(event.getY() - downY) < 50) {
-                if (!(event.getX() >= getContentView().getX() && event.getX() <= getContentView().getX() + getContentView().getWidth() &&
-                        event.getY() >= getContentView().getY() && event.getY() <= getContentView().getY() + getContentView().getHeight())) {
-                    close();
-                    return true;
-                }
-            }
-
-        } else {
-
-        }
-
-        boolean isReturn = false;
-        //要根据down来判断，如果触控边缘的话，要激活return true,由于内容控件被BaseDragLayout覆盖住，return true的话则不会执行内容的点击试下，return false则不会滑动该菜单
-        //所以理想的方法是，点击边缘跟mLeftMenuOnScreen>0,也就是激活菜单触控，return true，关闭的时候且没有点击边缘的话则return false不处理滑动，处理内容触摸
-        switch (getMode()) {
-            case MODE_DRAG_LEFT:
-                isReturn = event.getX() < mEdgeSize;
-                break;
-            case MODE_DRAG_RIGHT:
-                isReturn = getWidth() - event.getX() < mEdgeSize;
-                break;
-            case MODE_DRAG_TOP:
-                isReturn = event.getY() < mEdgeSize;
-                break;
-            case MODE_DRAG_BOTTOM:
-                isReturn = getHeight() - event.getY() < mEdgeSize;
-                break;
-        }
-
-        return mLeftMenuOnScreen == 0 ? (isReturn) : true;
     }
 
 
@@ -717,5 +717,28 @@ public abstract class BaseDragLayout extends ViewGroup {
             }
         }
         return false;
+    }
+
+    /**
+     * 是否点击到当前View
+     */
+    private boolean isClickView(View v, MotionEvent event) {
+        if (v != null) {
+            int[] leftTop = {0, 0};
+            //获取输入框当前的location位置
+            v.getLocationInWindow(leftTop);
+            int left = leftTop[0];
+            int top = leftTop[1];
+            int bottom = top + v.getHeight();
+            int right = left + v.getWidth();
+            if (event.getRawX() > left && event.getRawX() < right
+                    && event.getRawY() > top && event.getRawY() < bottom) {
+                // 点击的是输入框区域，保留点击EditText的事件
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 }

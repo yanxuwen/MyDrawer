@@ -520,7 +520,7 @@ public abstract class BaseDragLayout extends ViewGroup {
             }
         }
 
-        return false;
+        return isopen;
     }
 
     @Override

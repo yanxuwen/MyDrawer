@@ -40,7 +40,6 @@ public class TextDragLayout extends BaseDragLayout {
 
     @Override
     public void initView() {
-        setContentView(findViewById(R.id.layout_drag));
         iv_cover= (ImageView) findViewById(R.id.iv_cover);
     }
 }

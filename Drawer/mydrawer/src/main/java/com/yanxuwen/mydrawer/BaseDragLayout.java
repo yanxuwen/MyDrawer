@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import java.lang.reflect.Field;
 
@@ -37,12 +36,18 @@ public abstract class BaseDragLayout extends ViewGroup {
     private boolean isRecyclerViewRight = false;
 
     private boolean isopen;
-    public int mode;
+    public int mode = MODE_NULL;
+    private int drag_left;
+    private int drag_right;
+    private int drag_top;
+    private int drag_bottom;
+
     //边缘大小
     private int mEdgeSize = 30;
     //设置事件滑动，最小值，当小于这个值，不触发当前滑动
     private int mMoveEventSize = 30;
-    public final static int MODE_ALPHA = 0;
+    public final static int MODE_NULL = 0;
+    public final static int MODE_ALPHA = 100;
     public final static int MODE_DRAG_LEFT = 1;
     public final static int MODE_DRAG_RIGHT = 2;
     public final static int MODE_DRAG_BOTTOM = 3;
@@ -66,6 +71,8 @@ public abstract class BaseDragLayout extends ViewGroup {
      * drawer显示出来的占自身的百分比
      */
     private float mLeftMenuOnScreen;
+
+    private int pointerId;
 
 
     /**
@@ -131,11 +138,22 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     public abstract void initView();
 
-    public void setContentView(View mDescView) {
+    private void setContentView(View mDescView) {
         this.mDescView = mDescView;
     }
 
     public View getContentView() {
+        switch (getMode()) {
+            case MODE_DRAG_LEFT:
+                return findViewById(drag_left);
+            case MODE_DRAG_RIGHT:
+                return findViewById(drag_right);
+            case MODE_DRAG_TOP:
+                return findViewById(drag_top);
+            case MODE_DRAG_BOTTOM:
+                return findViewById(drag_bottom);
+
+        }
         return mDescView;
     }
 
@@ -155,16 +173,18 @@ public abstract class BaseDragLayout extends ViewGroup {
         mMinDrawerMargin = (int) (MIN_DRAWER_MARGIN * density + 0.5f);
         TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.DragLayout);
-        int mode = a.getInt(R.styleable.DragLayout_mode, 1);
+        drag_left = a.getResourceId(R.styleable.DragLayout_drag_left, 0);
+        drag_right = a.getResourceId(R.styleable.DragLayout_drag_right, 0);
+        drag_top = a.getResourceId(R.styleable.DragLayout_drag_top, 0);
+        drag_bottom = a.getResourceId(R.styleable.DragLayout_drag_bottom, 0);
+
         a.recycle();
-        setMode(mode);
         mDragHelper = ViewDragHelper.create(this, 1.0f, new ViewDragHelper.Callback() {
             @Override
             public boolean tryCaptureView(View child, int pointerId) {
                 //捕获该view
                 // return child == mDragView || child == mAutoBackView;
-
-                return child == getContentView();
+                return child.getId() == drag_left || child.getId() == drag_right || child.getId() == drag_top || child.getId() == drag_bottom;
             }
 
             @Override
@@ -249,8 +269,9 @@ public abstract class BaseDragLayout extends ViewGroup {
             //在边界拖动时回调
             @Override
             public void onEdgeDragStarted(int edgeFlags, int pointerId) {
+                BaseDragLayout.this.pointerId = pointerId;
                 if (isEdgeSlide()) {
-                    mDragHelper.captureChildView(getContentView(), pointerId);
+//                    mDragHelper.captureChildView(mDescView, pointerId);
                 }
             }
 
@@ -282,6 +303,7 @@ public abstract class BaseDragLayout extends ViewGroup {
                 if (mOnDragViewOffsetListener != null)
                     mOnDragViewOffsetListener.onDragViewOffset(offset);
                 if (offset == 0) {
+                    setMode(MODE_NULL);
                     isopen = false;
                     onViewStatus(false);
                     if (mOnDragViewStatusListener != null)
@@ -329,7 +351,10 @@ public abstract class BaseDragLayout extends ViewGroup {
         if (childCount > 0) {
             for (int i = 0; i < childCount; i++) {
                 View childView = getChildAt(i);
-                if (childView == mDescView) {
+                if (drag_left == childView.getId()
+                        || drag_right == childView.getId()
+                        || drag_bottom == childView.getId()
+                        || drag_top == childView.getId()) {
                     int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
                     int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
 
@@ -351,37 +376,35 @@ public abstract class BaseDragLayout extends ViewGroup {
         if (childCount > 0) {
             for (int i = 0; i < childCount; i++) {
                 View childView = getChildAt(i);
-                if (childView == mDescView) {
-                    MarginLayoutParams lp = (MarginLayoutParams) childView.getLayoutParams();
+                if (drag_left == childView.getId()
+                        || drag_right == childView.getId()
+                        || drag_bottom == childView.getId()
+                        || drag_top == childView.getId()) {
                     final int menuWidth = childView.getMeasuredWidth();
                     final int menuHeight = childView.getMeasuredHeight();
                     int childLeft;
                     int childTop;
-                    switch (getMode()) {
-                        case MODE_DRAG_LEFT:
-                            childLeft = -menuWidth + (int) (menuWidth * mLeftMenuOnScreen);
-                            childView.layout(childLeft, lp.topMargin, childLeft + menuWidth,
-                                    lp.topMargin + menuHeight);
-                            break;
-                        case MODE_DRAG_RIGHT:
-                            childLeft = getWidth() - (int) (menuWidth * mLeftMenuOnScreen);
-                            childView.layout(childLeft, lp.topMargin, childLeft + menuWidth,
-                                    lp.topMargin + menuHeight);
-
-                            break;
-                        case MODE_DRAG_TOP:
-                            childTop = -menuHeight + (int) (menuHeight * mLeftMenuOnScreen);
-                            childView.layout(lp.leftMargin, childTop, lp.leftMargin + menuWidth,
-                                    childTop + menuHeight);
-                            break;
-
-                        case MODE_DRAG_BOTTOM:
-                            childTop = getHeight() - (int) (menuHeight * mLeftMenuOnScreen);
-                            childView.layout(lp.leftMargin, childTop, lp.leftMargin + menuWidth,
-                                    childTop + menuHeight);
-                            break;
+                    if (drag_left == childView.getId()) {
+                        childLeft = -menuWidth + (int) (menuWidth * mLeftMenuOnScreen);
+                        childView.layout(childLeft, 0, childLeft + menuWidth,
+                                menuHeight);
+                    } else if (drag_right == childView.getId()) {
+                        childLeft = getWidth() - (int) (menuWidth * mLeftMenuOnScreen);
+                        childView.layout(childLeft, 0, childLeft + menuWidth,
+                                menuHeight);
+                    } else if (drag_top == childView.getId()) {
+                        childTop = -menuHeight + (int) (menuHeight * mLeftMenuOnScreen);
+                        childView.layout(0, childTop, menuWidth,
+                                childTop + menuHeight);
+                    } else if (drag_bottom == childView.getId()) {
+                        childTop = getHeight() - (int) (menuHeight * mLeftMenuOnScreen);
+                        childView.layout(0, childTop, menuWidth,
+                                childTop + menuHeight);
+                    } else {
+                        childView.layout(l, t, r, b);
                     }
                 } else {
+                    setContentView(childView);
                     childView.layout(l, t, r, b);
                 }
             }
@@ -389,25 +412,47 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     }
 
-    public void close() {
+    public void close(int mode) {
         mLeftMenuOnScreen = 0.f;
-        smoothSlideTo(mLeftMenuOnScreen);
+        smoothSlideTo(mLeftMenuOnScreen, mode);
     }
 
-    public void open() {
+    public void close() {
+        mLeftMenuOnScreen = 0.f;
+        smoothSlideTo(mLeftMenuOnScreen, getMode());
+    }
+
+    public void open(int mode) {
         mLeftMenuOnScreen = maxShowScale;
-        smoothSlideTo(mLeftMenuOnScreen);
+        smoothSlideTo(mLeftMenuOnScreen, mode);
+    }
+
+    /**
+     * 如果只有设置一个方向的话，则不用传递类型
+     * 如果设置多个方向的话，则默认打开左边
+     */
+    public void open() {
+        if (drag_left != 0) {
+            open(MODE_DRAG_LEFT);
+        } else if (drag_right != 0) {
+            open(MODE_DRAG_RIGHT);
+        } else if (drag_top != 0) {
+            open(MODE_DRAG_TOP);
+        } else if (drag_bottom != 0) {
+            open(MODE_DRAG_BOTTOM);
+        }
     }
 
     /**
      * 滑动试图，1f则为滑出屏幕，0f则滑到原始位置，目前为横向滑
      */
-    private boolean smoothSlideTo(float slideOffset) {
+    private boolean smoothSlideTo(float slideOffset, int mode) {
         int childWidth = getContentView().getWidth();
         int childHeight = getContentView().getHeight();
 
         int x = 0;
         int y = 0;
+        setMode(mode);
         switch (getMode()) {
             case MODE_DRAG_LEFT:
                 x = (int) ((slideOffset * childWidth) - childWidth);
@@ -450,9 +495,9 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (isOutside && !isClickView(getContentView(), ev) && isopen ) {
-            close();
-            return true;
+        if (isOutside && !isClickView(getContentView(), ev) && isopen) {
+           close();
+           return true;
         }
         if (getSlideable() || (!getSlideable() && ev.getAction() == MotionEvent.ACTION_UP)) {
             mDragHelper.shouldInterceptTouchEvent(ev);
@@ -465,59 +510,68 @@ public abstract class BaseDragLayout extends ViewGroup {
             downX = ev.getX();
             downY = ev.getY();
         } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-            if (mRecyclerView != null) {
-                switch (getMode()) {
-                    //如果mRecyclerView不等于空，则要多久判断isRecyclerView的滚动情况，后续会加上nestedscrollview
-                    case MODE_DRAG_LEFT:
-                        if ((mRecyclerView != null ? isRecyclerViewRight : false) && (downX - ev.getX()) > 1)
-                            return true;
-                        break;
-                    case MODE_DRAG_RIGHT:
-                        if ((mRecyclerView != null ? isRecyclerViewLeft : false) && (ev.getX() - downX) > 1)
-                            return true;
-                        break;
-                    case MODE_DRAG_TOP:
-                        if ((mRecyclerView != null ? isRecyclerViewBottom : false) && (downY - ev.getY()) > 1)
-                            return true;
-                        break;
-                    case MODE_DRAG_BOTTOM:
-                        if ((mRecyclerView != null ? isRecyclerViewTop : false) && (ev.getY() - downY) > 1)
-                            return true;
-                        break;
-                }
-                switch (getMode()) {
-                    case MODE_DRAG_LEFT:
-                    case MODE_DRAG_RIGHT:
-                        //如果是竖向的，则x>y则需要拦截子类
-                        if (!isRecyclerViewHorizontal()) {
-                            if ((Math.abs(ev.getX() - downX) - Math.abs(ev.getY() - downY)) > 30) {
-                                return true;
-                            }
-                        }
-                        break;
-                    case MODE_DRAG_TOP:
-                    case MODE_DRAG_BOTTOM:
-                        //如果是横向的，则y>x则需要拦截子类
-                        if (isRecyclerViewHorizontal()) {
-                            if ((Math.abs(ev.getY() - downY) - Math.abs(ev.getX() - downX)) > 30) {
-                                return true;
-                            }
-                        }
-                        break;
-                }
-            }
-            //如果是其他控件则超过20，则拦截
-            switch (getMode()) {
-                case MODE_DRAG_LEFT:
-                    if ((ev.getX() - downX) > mMoveEventSize) return true;
-                case MODE_DRAG_RIGHT:
-                    if ((downX - ev.getX()) > mMoveEventSize) return true;
-                case MODE_DRAG_TOP:
-                    if ((ev.getY() - downY) > mMoveEventSize) return true;
-                case MODE_DRAG_BOTTOM:
-                    if ((downY - ev.getY()) > mMoveEventSize) return true;
 
+            //如果是其他控件则超过mMoveEventSize，则拦截
+            if (getMode() == MODE_NULL) {
+                if ((ev.getX() - downX) > mMoveEventSize && drag_left != 0) {
+                    setMode(MODE_DRAG_LEFT);
+                    mDragHelper.captureChildView(getContentView(), pointerId);
+                    return true;
+                } else if ((downX - ev.getX()) > mMoveEventSize && drag_right != 0) {
+                    setMode(MODE_DRAG_RIGHT);
+                    mDragHelper.captureChildView(getContentView(), pointerId);
+                    return true;
+                } else if ((ev.getY() - downY) > mMoveEventSize && drag_top != 0) {
+                    setMode(MODE_DRAG_TOP);
+                    mDragHelper.captureChildView(getContentView(), pointerId);
+                    return true;
+                } else if ((downY - ev.getY()) > mMoveEventSize && drag_bottom != 0) {
+                    setMode(MODE_DRAG_BOTTOM);
+                    mDragHelper.captureChildView(getContentView(), pointerId);
+                    return true;
+                }
             }
+//            if (mRecyclerView != null) {
+//                switch (getMode()) {
+//                    //如果mRecyclerView不等于空，则要多久判断isRecyclerView的滚动情况，后续会加上nestedscrollview
+//                    case MODE_DRAG_LEFT:
+//                        if ((mRecyclerView != null ? isRecyclerViewRight : false) && (downX - ev.getX()) > 1)
+//                            return true;
+//                        break;
+//                    case MODE_DRAG_RIGHT:
+//                        if ((mRecyclerView != null ? isRecyclerViewLeft : false) && (ev.getX() - downX) > 1)
+//                            return true;
+//                        break;
+//                    case MODE_DRAG_TOP:
+//                        if ((mRecyclerView != null ? isRecyclerViewBottom : false) && (downY - ev.getY()) > 1)
+//                            return true;
+//                        break;
+//                    case MODE_DRAG_BOTTOM:
+//                        if ((mRecyclerView != null ? isRecyclerViewTop : false) && (ev.getY() - downY) > 1)
+//                            return true;
+//                        break;
+//                }
+//                switch (getMode()) {
+//                    case MODE_DRAG_LEFT:
+//                    case MODE_DRAG_RIGHT:
+//                        //如果是竖向的，则x>y则需要拦截子类
+//                        if (!isRecyclerViewHorizontal()) {
+//                            if ((Math.abs(ev.getX() - downX) - Math.abs(ev.getY() - downY)) > 30) {
+//                                return true;
+//                            }
+//                        }
+//                        break;
+//                    case MODE_DRAG_TOP:
+//                    case MODE_DRAG_BOTTOM:
+//                        //如果是横向的，则y>x则需要拦截子类
+//                        if (isRecyclerViewHorizontal()) {
+//                            if ((Math.abs(ev.getY() - downY) - Math.abs(ev.getX() - downX)) > 30) {
+//                                return true;
+//                            }
+//                        }
+//                        break;
+//                }
+//            }
         }
 
         return isopen;
@@ -525,36 +579,11 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-       if (isopen){
-           processTouchEvent(event);
-       }
-        switch (getMode()) {
-            case MODE_DRAG_LEFT:
-                if ((event.getX() - downX) > mMoveEventSize) {
-                    processTouchEvent(event);
-                }
-                break;
-            case MODE_DRAG_RIGHT:
-                if ((downX - event.getX()) > mMoveEventSize) {
-                    processTouchEvent(event);
-                }
-                break;
-            case MODE_DRAG_TOP:
-                if ((event.getY() - downY) > mMoveEventSize) {
-                    processTouchEvent(event);
-                }
-                break;
-            case MODE_DRAG_BOTTOM:
-                if ((downY - event.getY()) > mMoveEventSize) {
-                    processTouchEvent(event);
-                }
-                break;
-        }
-
+        processTouchEvent(event);
         return true;
     }
 
-    private void processTouchEvent(MotionEvent event){
+    private void processTouchEvent(MotionEvent event) {
         if (getSlideable() || (!getSlideable() && event.getAction() == MotionEvent.ACTION_UP)) {
             mDragHelper.processTouchEvent(event);
         }

@@ -1,64 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.yanxuwen.drawer.TextDragLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:myapp="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/includ_text_drag"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/includ_text_drag"
-    xmlns:myapp="http://schemas.android.com/apk/res-auto"
-    myapp:mode="drag_right"
-    >
-   <LinearLayout
-       android:id="@+id/layout"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:orientation="vertical"
-       >
+    myapp:drag_right= "@+id/layout_drag"
+    myapp:drag_left="@+id/layout_drag_left">
+    <LinearLayout
+        android:id="@+id/layout"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-       <Button
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:onClick="onFullRight"
-           android:text="整体抽屉right"/>
-       <Button
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:onClick="onFullLeft"
-           android:text="整体抽屉left"/>
-       <Button
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:onClick="onFullBottom"
-           android:text="整体抽屉bottom"/>
-       <Button
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:onClick="onFullTop"
-           android:text="整体抽屉top"/>
-       <!--<Button-->
-           <!--android:layout_width="match_parent"-->
-           <!--android:layout_height="wrap_content"-->
-           <!--android:onClick="onFullAlpha"-->
-           <!--android:text="渐变抽屉"/>-->
-       <!--<Button-->
-           <!--android:id="@+id/button"-->
-           <!--android:layout_width="wrap_content"-->
-           <!--android:layout_height="wrap_content"-->
-           <!--android:text="控件抽屉，目前只支持上下，不支持左右"-->
-           <!--android:onClick="onControlDrawer" />-->
-   </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onFullRight"
+            android:text="整体抽屉right" />
 
-    <include
-        layout="@layout/test_drag"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onFullLeft"
+            android:text="整体抽屉left" />
 
-<!--    <include-->
-<!--        android:id="@+id/includ_text_drag2"-->
-<!--        layout="@layout/test_drag_left"/>-->
-<!--    <include-->
-<!--        android:id="@+id/includ_text_drag3"-->
-<!--        layout="@layout/test_drag_bottom"/>-->
-<!--    <include-->
-<!--        android:id="@+id/includ_text_drag4"-->
-<!--        layout="@layout/test_drag_top"/>-->
-<!--    <include-->
-<!--    android:id="@+id/includ_text_drag5"-->
-<!--    layout="@layout/test_drag_alptha"/>-->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onFullBottom"
+            android:text="整体抽屉bottom" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onFullTop"
+            android:text="整体抽屉top" />
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/iv_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:alpha="0"
+        />
+    <RelativeLayout
+        android:id="@+id/layout_drag_left"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:background="#ff0000"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="test"
+            android:textSize="16sp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+
+    <include layout="@layout/test_drag" />
 </com.yanxuwen.drawer.TextDragLayout>

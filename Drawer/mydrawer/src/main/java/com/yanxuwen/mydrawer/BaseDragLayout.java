@@ -7,12 +7,14 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public abstract class BaseDragLayout extends ViewGroup {
     /**
@@ -30,10 +32,6 @@ public abstract class BaseDragLayout extends ViewGroup {
     //	/**显示出来的最高比例*/
     private float maxShowScale = 1F;
     private RecyclerView mRecyclerView;
-    private boolean isRecyclerViewTop = false;
-    private boolean isRecyclerViewBottom = false;
-    private boolean isRecyclerViewLeft = false;
-    private boolean isRecyclerViewRight = false;
 
     private boolean isopen;
     public int mode = MODE_NULL;
@@ -139,6 +137,7 @@ public abstract class BaseDragLayout extends ViewGroup {
     public abstract void initView();
 
     private void setContentView(View mDescView) {
+        mDescView.setClickable(true);
         this.mDescView = mDescView;
     }
 
@@ -154,7 +153,7 @@ public abstract class BaseDragLayout extends ViewGroup {
                 return findViewById(drag_bottom);
 
         }
-        return mDescView;
+        return this;
     }
 
     public BaseDragLayout(Context context) {
@@ -370,6 +369,13 @@ public abstract class BaseDragLayout extends ViewGroup {
         }
     }
 
+    private boolean initLeft;
+    private boolean initRight;
+    private boolean initTop;
+    private boolean initBottom;
+    private boolean isFirstChildContent = true;
+
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int childCount = getChildCount();
@@ -384,27 +390,36 @@ public abstract class BaseDragLayout extends ViewGroup {
                     final int menuHeight = childView.getMeasuredHeight();
                     int childLeft;
                     int childTop;
-                    if (drag_left == childView.getId()) {
+                    if (drag_left == childView.getId() && !initLeft) {
+                        initLeft = true;
                         childLeft = -menuWidth + (int) (menuWidth * mLeftMenuOnScreen);
                         childView.layout(childLeft, 0, childLeft + menuWidth,
                                 menuHeight);
-                    } else if (drag_right == childView.getId()) {
+                    } else if (drag_right == childView.getId() && !initRight) {
+                        initRight = true;
                         childLeft = getWidth() - (int) (menuWidth * mLeftMenuOnScreen);
                         childView.layout(childLeft, 0, childLeft + menuWidth,
                                 menuHeight);
-                    } else if (drag_top == childView.getId()) {
+                    } else if (drag_top == childView.getId() && !initTop) {
+                        initTop = true;
                         childTop = -menuHeight + (int) (menuHeight * mLeftMenuOnScreen);
                         childView.layout(0, childTop, menuWidth,
                                 childTop + menuHeight);
-                    } else if (drag_bottom == childView.getId()) {
+                    } else if (drag_bottom == childView.getId() && !initBottom) {
+                        initBottom = true;
                         childTop = getHeight() - (int) (menuHeight * mLeftMenuOnScreen);
                         childView.layout(0, childTop, menuWidth,
                                 childTop + menuHeight);
                     } else {
-                        childView.layout(l, t, r, b);
+                        childView.layout(childView.getLeft(), childView.getTop(), childView.getRight(), childView.getBottom());
                     }
+                    childView.setClickable(true);
                 } else {
-                    setContentView(childView);
+                    if (isFirstChildContent) {
+                        isFirstChildContent = false;
+                        setContentView(childView);
+                        childView.setClickable(true);
+                    }
                     childView.layout(l, t, r, b);
                 }
             }
@@ -496,8 +511,8 @@ public abstract class BaseDragLayout extends ViewGroup {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (isOutside && !isClickView(getContentView(), ev) && isopen) {
-           close();
-           return true;
+            close();
+            return true;
         }
         if (getSlideable() || (!getSlideable() && ev.getAction() == MotionEvent.ACTION_UP)) {
             mDragHelper.shouldInterceptTouchEvent(ev);
@@ -509,10 +524,11 @@ public abstract class BaseDragLayout extends ViewGroup {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             downX = ev.getX();
             downY = ev.getY();
+        } else if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
         } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-
-            //如果是其他控件则超过mMoveEventSize，则拦截
-            if (getMode() == MODE_NULL) {
+            //拦截抽屉外的内容
+            //如果是其他控件则超过mMoveEventSize，则拦截,拦截
+            if (!isopen && getMode() == MODE_NULL) {
                 if ((ev.getX() - downX) > mMoveEventSize && drag_left != 0) {
                     setMode(MODE_DRAG_LEFT);
                     mDragHelper.captureChildView(getContentView(), pointerId);
@@ -530,51 +546,46 @@ public abstract class BaseDragLayout extends ViewGroup {
                     mDragHelper.captureChildView(getContentView(), pointerId);
                     return true;
                 }
+            } else if (isopen) {
+                //拦截列表
+                if (mRecyclerView != null && isClickView(mRecyclerView, ev)) {
+                    switch (getMode()) {
+                        //如果mRecyclerView不等于空，则要多久判断isRecyclerView的滚动情况，后续会加上nestedscrollview
+                        case MODE_DRAG_LEFT:
+                            if (!mRecyclerView.canScrollHorizontally(5) && (downX - ev.getX()) > 5)
+                                return true;
+                            break;
+                        case MODE_DRAG_RIGHT:
+                            if (!mRecyclerView.canScrollHorizontally(-5) && (ev.getX() - downX) > 5)
+                                return true;
+                            break;
+                        case MODE_DRAG_TOP:
+                            if (!mRecyclerView.canScrollVertically(-5) && (downY - ev.getY()) > 5)
+                                return true;
+                            break;
+                        case MODE_DRAG_BOTTOM:
+                            if (!mRecyclerView.canScrollVertically(5) && (ev.getY() - downY) > 5)
+                                return true;
+                            break;
+                    }
+                } else {
+                    //拦截抽屉内的内容
+                    //如果 打开状态，判断条件要跟上面反方向，则要大于20 则拦截，避免无法抽屉内容，无法点击
+                    if (getMode() == MODE_DRAG_LEFT && (downX - ev.getX()) > 20) {
+                        return true;
+                    } else if (getMode() == MODE_DRAG_RIGHT && (ev.getX() - downX) > 20) {
+                        return true;
+                    } else if (getMode() == MODE_DRAG_TOP && (downY - ev.getY()) > 20) {
+                        return true;
+                    } else if (getMode() == MODE_DRAG_BOTTOM && (ev.getY() - downY) > 20) {
+                        return true;
+                    }
+                }
             }
-//            if (mRecyclerView != null) {
-//                switch (getMode()) {
-//                    //如果mRecyclerView不等于空，则要多久判断isRecyclerView的滚动情况，后续会加上nestedscrollview
-//                    case MODE_DRAG_LEFT:
-//                        if ((mRecyclerView != null ? isRecyclerViewRight : false) && (downX - ev.getX()) > 1)
-//                            return true;
-//                        break;
-//                    case MODE_DRAG_RIGHT:
-//                        if ((mRecyclerView != null ? isRecyclerViewLeft : false) && (ev.getX() - downX) > 1)
-//                            return true;
-//                        break;
-//                    case MODE_DRAG_TOP:
-//                        if ((mRecyclerView != null ? isRecyclerViewBottom : false) && (downY - ev.getY()) > 1)
-//                            return true;
-//                        break;
-//                    case MODE_DRAG_BOTTOM:
-//                        if ((mRecyclerView != null ? isRecyclerViewTop : false) && (ev.getY() - downY) > 1)
-//                            return true;
-//                        break;
-//                }
-//                switch (getMode()) {
-//                    case MODE_DRAG_LEFT:
-//                    case MODE_DRAG_RIGHT:
-//                        //如果是竖向的，则x>y则需要拦截子类
-//                        if (!isRecyclerViewHorizontal()) {
-//                            if ((Math.abs(ev.getX() - downX) - Math.abs(ev.getY() - downY)) > 30) {
-//                                return true;
-//                            }
-//                        }
-//                        break;
-//                    case MODE_DRAG_TOP:
-//                    case MODE_DRAG_BOTTOM:
-//                        //如果是横向的，则y>x则需要拦截子类
-//                        if (isRecyclerViewHorizontal()) {
-//                            if ((Math.abs(ev.getY() - downY) - Math.abs(ev.getX() - downX)) > 30) {
-//                                return true;
-//                            }
-//                        }
-//                        break;
-//                }
-//            }
+
         }
 
-        return isopen;
+        return false;
     }
 
     @Override
@@ -684,34 +695,6 @@ public abstract class BaseDragLayout extends ViewGroup {
      */
     public void setRecyclerView(final RecyclerView mRecyclerView) {
         this.mRecyclerView = mRecyclerView;
-        //监听滚动状态
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (Math.abs(dy) > 10) {
-                    isRecyclerViewTop = false;
-                    isRecyclerViewBottom = false;
-                }
-                if (Math.abs(dx) > 10) {
-                    isRecyclerViewLeft = false;
-                    isRecyclerViewRight = false;
-                }
-                if (!(recyclerView.canScrollVertically(-1)) && !isRecyclerViewHorizontal()) {
-                    //top
-                    isRecyclerViewTop = true;
-                } else if (!(recyclerView.canScrollVertically(1)) && !isRecyclerViewHorizontal()) {
-                    //bottom
-                    isRecyclerViewBottom = true;
-                } else if (!(recyclerView.canScrollHorizontally(-1)) && isRecyclerViewHorizontal()) {
-                    //left
-                    isRecyclerViewLeft = true;
-                } else if (!(recyclerView.canScrollHorizontally(1)) && isRecyclerViewHorizontal()) {
-                    //right
-                    isRecyclerViewRight = true;
-                }
-
-            }
-        });
     }
 
     /**

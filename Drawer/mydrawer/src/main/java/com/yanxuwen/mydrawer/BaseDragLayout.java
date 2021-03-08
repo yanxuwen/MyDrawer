@@ -1,5 +1,6 @@
 package com.yanxuwen.mydrawer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.FloatRange;
@@ -7,14 +8,12 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public abstract class BaseDragLayout extends ViewGroup {
     /**
@@ -71,6 +70,12 @@ public abstract class BaseDragLayout extends ViewGroup {
     private float mLeftMenuOnScreen;
 
     private int pointerId;
+
+    private Context context;
+
+    private boolean isFullScreen;//是否全屏
+    private boolean isLiuhai;//是否刘海屏
+    private int statusHeight;
 
 
     /**
@@ -166,7 +171,13 @@ public abstract class BaseDragLayout extends ViewGroup {
 
     public BaseDragLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        this.context = context;
+        try {
+            statusHeight = NotchScreenUtils.getStatusHeight(context);
+            isLiuhai = NotchScreenUtils.hasNotchScreen((Activity) context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         float density = getResources().getDisplayMetrics().density;
         float minVel = MIN_FLING_VELOCITY * density;  //1200
         mMinDrawerMargin = (int) (MIN_DRAWER_MARGIN * density + 0.5f);
@@ -739,12 +750,17 @@ public abstract class BaseDragLayout extends ViewGroup {
             int[] leftTop = {0, 0};
             //获取输入框当前的location位置
             v.getLocationInWindow(leftTop);
-            int left = leftTop[0];
-            int top = leftTop[1];
-            int bottom = top + v.getHeight();
-            int right = left + v.getWidth();
-            if (event.getRawX() > left && event.getRawX() < right
-                    && event.getRawY() > top && event.getRawY() < bottom) {
+            int left = v.getLeft();
+            int top = v.getTop();
+            int bottom = v.getBottom();
+            int right = v.getRight();
+            float rawY = event.getRawY();
+            //是否全屏且刘海屏
+            if (isFullScreen && isLiuhai) {
+                rawY -= statusHeight;
+            }
+            if (event.getRawX() >= left && event.getRawX() <= right
+                    && rawY >= top && rawY <= bottom) {
                 // 点击的是输入框区域，保留点击EditText的事件
                 return true;
             } else {
@@ -752,5 +768,12 @@ public abstract class BaseDragLayout extends ViewGroup {
             }
         }
         return true;
+    }
+
+    /**
+     * 是否全屏
+     */
+    public void setFullScreen(boolean isFullScreen) {
+        this.isFullScreen = isFullScreen;
     }
 }

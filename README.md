@@ -8,7 +8,7 @@
 
 
 ## 依赖：	
-   compile 'com.yanxuwen.mydrawer:mydrawer:1.1.4’
+   compile 'com.yanxuwen.mydrawer:mydrawer:1.2.1’
 ## 实现：	
 #### 1.首先自定义类。TextDragLayout 
 ~~~

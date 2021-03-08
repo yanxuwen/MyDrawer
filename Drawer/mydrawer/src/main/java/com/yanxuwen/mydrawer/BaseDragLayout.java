@@ -6,8 +6,6 @@ import android.content.res.TypedArray;
 import android.support.annotation.FloatRange;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,7 +28,7 @@ public abstract class BaseDragLayout extends ViewGroup {
     private boolean isOutside = true;
     //	/**显示出来的最高比例*/
     private float maxShowScale = 1F;
-    private RecyclerView mRecyclerView;
+    private RecyclerViewImpl mRecyclerViewImpl;
 
     private boolean isopen;
     public int mode = MODE_NULL;
@@ -559,23 +557,23 @@ public abstract class BaseDragLayout extends ViewGroup {
                 }
             } else if (isopen) {
                 //拦截列表
-                if (mRecyclerView != null && isClickView(mRecyclerView, ev)) {
+                if (mRecyclerViewImpl != null && isClickView(mRecyclerViewImpl.getRecyclerView(), ev)) {
                     switch (getMode()) {
                         //如果mRecyclerView不等于空，则要多久判断isRecyclerView的滚动情况，后续会加上nestedscrollview
                         case MODE_DRAG_LEFT:
-                            if (!mRecyclerView.canScrollHorizontally(5) && (downX - ev.getX()) > 5)
+                            if (!mRecyclerViewImpl.canScrollHorizontally(5) && (downX - ev.getX()) > 5)
                                 return true;
                             break;
                         case MODE_DRAG_RIGHT:
-                            if (!mRecyclerView.canScrollHorizontally(-5) && (ev.getX() - downX) > 5)
+                            if (!mRecyclerViewImpl.canScrollHorizontally(-5) && (ev.getX() - downX) > 5)
                                 return true;
                             break;
                         case MODE_DRAG_TOP:
-                            if (!mRecyclerView.canScrollVertically(-5) && (downY - ev.getY()) > 5)
+                            if (!mRecyclerViewImpl.canScrollVertically(-5) && (downY - ev.getY()) > 5)
                                 return true;
                             break;
                         case MODE_DRAG_BOTTOM:
-                            if (!mRecyclerView.canScrollVertically(5) && (ev.getY() - downY) > 5)
+                            if (!mRecyclerViewImpl.canScrollVertically(5) && (ev.getY() - downY) > 5)
                                 return true;
                             break;
                     }
@@ -704,8 +702,8 @@ public abstract class BaseDragLayout extends ViewGroup {
     /**
      * 支持RecyclerView的联动，先滑动RecyclerView，然后在滑动该视图
      */
-    public void setRecyclerView(final RecyclerView mRecyclerView) {
-        this.mRecyclerView = mRecyclerView;
+    public void setRecyclerViewImpl(final RecyclerViewImpl mRecyclerViewImpl) {
+        this.mRecyclerViewImpl = mRecyclerViewImpl;
     }
 
     /**
@@ -729,21 +727,6 @@ public abstract class BaseDragLayout extends ViewGroup {
      */
     public void setMoveEventSize(int mMoveEventSize) {
         this.mMoveEventSize = mMoveEventSize;
-    }
-
-
-    /**
-     * 是否是横向的，如果是则不显示加载样式
-     */
-    private boolean isRecyclerViewHorizontal() {
-        if (mRecyclerView == null) return false;
-        RecyclerView.LayoutManager mLayoutManager = mRecyclerView.getLayoutManager();
-        if (mLayoutManager instanceof LinearLayoutManager) {
-            if (((LinearLayoutManager) mLayoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

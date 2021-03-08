@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Drawer.iml" filepath="$PROJECT_DIR$/Drawer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mydrawer/mydrawer.iml" filepath="$PROJECT_DIR$/mydrawer/mydrawer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Drawer.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Drawer.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mydrawer/Drawer.mydrawer.iml" filepath="$PROJECT_DIR$/.idea/modules/mydrawer/Drawer.mydrawer.iml" />
     </modules>
   </component>
 </project>

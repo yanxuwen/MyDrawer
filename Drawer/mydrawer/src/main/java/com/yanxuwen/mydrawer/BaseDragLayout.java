@@ -709,9 +709,10 @@ public abstract class BaseDragLayout extends ViewGroup {
     }
 
     /**
-     * 设置边缘大小
+     * 设置DragHelper 里面的边缘大小
+     * 目前有问题，暂不开放
      */
-    public void setEdgeSize(int mEdgeSize) {
+    private void setEdgeSize(int mEdgeSize) {
         this.mEdgeSize = mEdgeSize;
         Field field = null;
         try {
@@ -723,6 +724,9 @@ public abstract class BaseDragLayout extends ViewGroup {
         }
     }
 
+    /**
+     * 设置事件滑动，最小值，当小于这个值，不触发当前滑动
+     */
     public void setMoveEventSize(int mMoveEventSize) {
         this.mMoveEventSize = mMoveEventSize;
     }

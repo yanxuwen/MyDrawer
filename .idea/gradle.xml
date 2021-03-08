@@ -3,16 +3,16 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="LOCAL" />
+        <option name="testRunner" value="PLATFORM" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$USER_HOME$/.gradle/wrapper/dists/gradle-5.4.1-all/3221gyojl5jsh0helicew7rwx/gradle-5.4.1" />
+        <option name="gradleHome" value="$USER_HOME$/.gradle/wrapper/dists/gradle-5.4.1-bin/e75iq110yv9r9wt1a6619x2xm/gradle-5.4.1" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
-        <option name="testRunner" value="PLATFORM" />
         <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>

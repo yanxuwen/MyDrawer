@@ -22,24 +22,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTextDragLayout = (TextDragLayout)findViewById(R.id.includ_text_drag);
-        mTextDragLayout.setEdgeSize(20000);
         mTextDragLayout.setMoveEventSize(200);
 
     }
     public void onFullRight(View v){
-        mTextDragLayout.open();
+        if (mTextDragLayout.isOpen()){
+            mTextDragLayout.close(BaseDragLayout.MODE_DRAG_RIGHT);
+        } else {
+            mTextDragLayout.open(BaseDragLayout.MODE_DRAG_RIGHT);
+        }
     }
 
     public void onFullLeft(View v){
-        Toast.makeText(this,"测试",Toast.LENGTH_SHORT).show();
-    }
+        if (mTextDragLayout.isOpen()){
+            mTextDragLayout.close(BaseDragLayout.MODE_DRAG_LEFT);
+        } else {
+            mTextDragLayout.open(BaseDragLayout.MODE_DRAG_LEFT);
+        }    }
 
     public void onFullBottom(View v){
-        Toast.makeText(this,"测试",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"没有设置",Toast.LENGTH_SHORT).show();
     }
 
     public void onFullTop(View v){
-        Toast.makeText(this,"测试",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"没有设置",Toast.LENGTH_SHORT).show();
     }
 
 }
